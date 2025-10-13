@@ -54,17 +54,18 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Username Field
+          // Email Field
           TextFormField(
             controller: _usernameController,
             enabled: !widget.isLoading,
+            keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: 'Username',
-              hintText: 'Enter your username',
+              labelText: 'Email',
+              hintText: 'Enter your email',
               prefixIcon: Padding(
                 padding: EdgeInsets.all(3.w),
                 child: CustomIconWidget(
-                  iconName: 'person',
+                  iconName: 'email',
                   color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
                   size: 5.w,
                 ),
@@ -72,10 +73,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your username';
+                return 'Please enter your email';
               }
-              if (value.length < 3) {
-                return 'Username must be at least 3 characters';
+              if (!value.contains('@')) {
+                return 'Please enter a valid email';
               }
               return null;
             },

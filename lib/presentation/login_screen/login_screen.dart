@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
+import '../../core/services/auth_service.dart';
 import './widgets/biometric_auth_widget.dart';
 import './widgets/healthcare_logo_widget.dart';
 import './widgets/login_form_widget.dart';
@@ -23,14 +24,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isAccountLocked = false;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-
-  // Mock credentials for different roles
-  final Map<String, Map<String, String>> _mockCredentials = {
-    'admin': {'password': 'admin123', 'role': 'Admin'},
-    'doctor': {'password': 'doctor123', 'role': 'RMO'},
-    'nurse': {'password': 'nurse123', 'role': 'Staff'},
-    'arogya': {'password': 'arogya123', 'role': 'Arogya Mitra'},
-  };
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -78,54 +72,46 @@ class _LoginScreenState extends State<LoginScreen>
     });
 
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      final response = await _authService.signIn(
+        email: username.contains('@') ? username : '$username@dialysisflow.com',
+        password: password,
+      );
 
-      // Check credentials
-      final credentials = _mockCredentials[username.toLowerCase()];
-      if (credentials != null &&
-          credentials['password'] == password &&
-          credentials['role'] == selectedRole) {
-        // Success - provide haptic feedback
+      if (response.user != null) {
         HapticFeedback.lightImpact();
 
-        // Reset failed attempts
         setState(() {
           _failedAttempts = 0;
         });
 
-        // Navigate to role-based dashboard
-        Navigator.pushReplacementNamed(context, '/role-based-dashboard');
-      } else {
-        // Failed login
-        HapticFeedback.heavyImpact();
-        setState(() {
-          _failedAttempts++;
-          if (_failedAttempts >= 3) {
-            _isAccountLocked = true;
-            // Auto unlock after 30 seconds (for demo purposes)
-            Future.delayed(const Duration(seconds: 30), () {
-              if (mounted) {
-                setState(() {
-                  _isAccountLocked = false;
-                  _failedAttempts = 0;
-                });
-              }
-            });
-          }
-        });
-
-        if (_failedAttempts >= 3) {
-          _showErrorMessage(
-              'Account locked due to multiple failed attempts. Please try again in 30 seconds.');
-        } else {
-          _showErrorMessage(
-              'Invalid credentials. Please check your username, password, and selected role.');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/role-based-dashboard');
         }
       }
     } catch (e) {
-      _showErrorMessage(
-          'Network error. Please check your connection and try again.');
+      HapticFeedback.heavyImpact();
+      setState(() {
+        _failedAttempts++;
+        if (_failedAttempts >= 3) {
+          _isAccountLocked = true;
+          Future.delayed(const Duration(seconds: 30), () {
+            if (mounted) {
+              setState(() {
+                _isAccountLocked = false;
+                _failedAttempts = 0;
+              });
+            }
+          });
+        }
+      });
+
+      if (_failedAttempts >= 3) {
+        _showErrorMessage(
+            'Account locked due to multiple failed attempts. Please try again in 30 seconds.');
+      } else {
+        _showErrorMessage(
+            'Invalid credentials. Please check your email and password.');
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -253,35 +239,10 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         SizedBox(height: 2.h),
 
-        // Mock Credentials Info
-        Container(
-          padding: EdgeInsets.all(3.w),
-          decoration: BoxDecoration(
-            color: AppTheme.lightTheme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(2.w),
-            border: Border.all(
-              color: AppTheme.lightTheme.colorScheme.outline
-                  .withValues(alpha: 0.3),
-            ),
-          ),
-          child: Column(
-            children: [
-              Text(
-                'Demo Credentials',
-                style: AppTheme.lightTheme.textTheme.titleSmall?.copyWith(
-                  color: AppTheme.lightTheme.colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                'admin/admin123 (Admin) • doctor/doctor123 (RMO)\nnurse/nurse123 (Staff) • arogya/arogya123 (Arogya Mitra)',
-                style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
-                  color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+        Text(
+          'Secure Healthcare Access',
+          style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
+            color: AppTheme.lightTheme.colorScheme.onSurfaceVariant,
           ),
         ),
       ],

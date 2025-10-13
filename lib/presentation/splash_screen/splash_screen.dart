@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
+import '../../core/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
   bool _showRetryButton = false;
   bool _isInitializing = true;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -100,7 +102,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _checkAuthenticationStatus() async {
-    // Simulate authentication check
     await Future.delayed(const Duration(milliseconds: 800));
   }
 
@@ -120,10 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToNextScreen() {
-    // Mock authentication status - in real app, this would check actual auth state
-    final bool isAuthenticated = false; // Mock value
-    final String userRole =
-        'RMO'; // Mock value: RMO, Staff, Arogya Mitra, Admin
+    final bool isAuthenticated = _authService.isAuthenticated;
 
     if (isAuthenticated) {
       Navigator.pushReplacementNamed(context, '/role-based-dashboard');
