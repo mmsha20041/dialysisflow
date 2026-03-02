@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/app_export.dart';
+import 'package:dialysisflow/core/app_export.dart';
 
 class GovernmentIdSection extends StatelessWidget {
   final TextEditingController aadhaarController;

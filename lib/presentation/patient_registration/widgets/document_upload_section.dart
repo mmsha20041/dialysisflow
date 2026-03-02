@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/app_export.dart';
+import 'package:dialysisflow/core/app_export.dart';
 
 class DocumentUploadSection extends StatefulWidget {
   final List<PlatformFile> uploadedDocuments;

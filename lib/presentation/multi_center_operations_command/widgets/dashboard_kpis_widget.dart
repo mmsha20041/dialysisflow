@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/app_export.dart';
+import 'package:dialysisflow/core/app_export.dart';
 import '../../../theme/app_theme.dart';
 
 class DashboardKpisWidget extends StatefulWidget {

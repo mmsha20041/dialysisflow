@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../presentation/patient_detail/patient_detail.dart';
-import '../presentation/splash_screen/splash_screen.dart';
-import '../presentation/role_based_dashboard/role_based_dashboard.dart';
-import '../presentation/login_screen/login_screen.dart';
-import '../presentation/patient_list/patient_list.dart';
-import '../presentation/patient_registration/patient_registration.dart';
+import 'package:dialysisflow/features/auth/presentation/login_screen/login_screen.dart';
+import 'package:dialysisflow/features/dashboard/presentation/role_based_dashboard/role_based_dashboard.dart';
+import 'package:dialysisflow/features/patients/presentation/patient_detail/patient_detail.dart';
+import 'package:dialysisflow/features/patients/presentation/patient_list/patient_list.dart';
+
 import '../presentation/multi_center_operations_command/multi_center_operations_command.dart';
+import '../presentation/patient_registration/patient_registration.dart';
+import '../presentation/splash_screen/splash_screen.dart';
 
 class AppRoutes {
-  // TODO: Add your routes here
   static const String initial = '/';
   static const String patientDetail = '/patient-detail';
   static const String splash = '/splash-screen';
@@ -29,6 +29,5 @@ class AppRoutes {
     patientRegistration: (context) => const PatientRegistration(),
     multiCenterOperationsCommand: (context) =>
         const MultiCenterOperationsCommand(),
-    // TODO: Add your other routes here
   };
 }

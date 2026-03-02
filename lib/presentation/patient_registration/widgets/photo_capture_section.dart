@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../core/app_export.dart';
+import 'package:dialysisflow/core/app_export.dart';
 
 class PhotoCaptureSection extends StatefulWidget {
   final XFile? capturedImage;
