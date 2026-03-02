@@ -277,7 +277,7 @@ class _RoleBasedDashboardState extends State<RoleBasedDashboard>
     switch (_currentUserRole.toLowerCase()) {
       case 'staff':
       case 'nurse':
-        Navigator.pushNamed(context, '/patient-registration');
+        Navigator.pushNamed(context, AppRoutes.dialysisSchedule);
         break;
       case 'rmo':
       case 'doctor':
@@ -431,8 +431,8 @@ class _RoleBasedDashboardState extends State<RoleBasedDashboard>
                       SizedBox(height: 1.h),
                       ElevatedButton(
                         onPressed: () =>
-                            Navigator.pushNamed(context, '/patient-detail'),
-                        child: Text('View Active Sessions'),
+                            Navigator.pushNamed(context, AppRoutes.dialysisSchedule),
+                        child: Text('Open Session Scheduler'),
                       ),
                     ],
                   ),

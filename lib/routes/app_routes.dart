@@ -6,6 +6,7 @@ import '../presentation/login_screen/login_screen.dart';
 import '../presentation/patient_list/patient_list.dart';
 import '../presentation/patient_registration/patient_registration.dart';
 import '../presentation/multi_center_operations_command/multi_center_operations_command.dart';
+import '../presentation/dialysis_schedule/dialysis_schedule.dart';
 
 class AppRoutes {
   // TODO: Add your routes here
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String patientRegistration = '/patient-registration';
   static const String multiCenterOperationsCommand =
       '/multi-center-operations-command';
+  static const String dialysisSchedule = '/dialysis-schedule';
 
   static Map<String, WidgetBuilder> routes = {
     initial: (context) => const SplashScreen(),
@@ -29,6 +31,7 @@ class AppRoutes {
     patientRegistration: (context) => const PatientRegistration(),
     multiCenterOperationsCommand: (context) =>
         const MultiCenterOperationsCommand(),
+    dialysisSchedule: (context) => const DialysisSchedule(),
     // TODO: Add your other routes here
   };
 }
