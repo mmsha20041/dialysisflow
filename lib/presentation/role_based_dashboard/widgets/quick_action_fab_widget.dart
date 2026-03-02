@@ -41,7 +41,7 @@ class QuickActionFabWidget extends StatelessWidget {
     switch (userRole.toLowerCase()) {
       case 'staff':
       case 'nurse':
-        return 'person_add';
+        return 'calendar_month';
       case 'rmo':
       case 'doctor':
         return 'assignment';
@@ -58,7 +58,7 @@ class QuickActionFabWidget extends StatelessWidget {
     switch (userRole.toLowerCase()) {
       case 'staff':
       case 'nurse':
-        return 'New Patient';
+        return 'Schedule Session';
       case 'rmo':
       case 'doctor':
         return 'Review Notes';
