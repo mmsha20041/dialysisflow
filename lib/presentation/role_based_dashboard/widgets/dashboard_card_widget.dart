@@ -33,18 +33,25 @@ class DashboardCardWidget extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
         padding: EdgeInsets.all(4.w),
         decoration: BoxDecoration(
-          color: AppTheme.lightTheme.cardColor,
-          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppTheme.lightTheme.cardColor,
+              _getPriorityColor().withValues(alpha: 0.05),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _getPriorityColor().withValues(alpha: 0.2),
+            color: _getPriorityColor().withValues(alpha: 0.18),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
               color: AppTheme.lightTheme.colorScheme.shadow
                   .withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: Offset(0, 2),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -57,8 +64,13 @@ class DashboardCardWidget extends StatelessWidget {
                   width: 12.w,
                   height: 12.w,
                   decoration: BoxDecoration(
-                    color: _getPriorityColor().withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    gradient: LinearGradient(
+                      colors: [
+                        _getPriorityColor().withValues(alpha: 0.18),
+                        _getPriorityColor().withValues(alpha: 0.08),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(
                     child: CustomIconWidget(
@@ -135,7 +147,8 @@ class DashboardCardWidget extends StatelessWidget {
                     backgroundColor: _getPriorityColor().withValues(alpha: 0.1),
                     valueColor:
                         AlwaysStoppedAnimation<Color>(_getPriorityColor()),
-                    minHeight: 4,
+                    minHeight: 6,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 SizedBox(width: 2.w),

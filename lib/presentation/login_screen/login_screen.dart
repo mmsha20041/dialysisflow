@@ -148,56 +148,82 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
-      body: SafeArea(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 6.w),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height -
-                    MediaQuery.of(context).padding.top -
-                    MediaQuery.of(context).padding.bottom,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(height: 8.h),
-
-                  // Healthcare Logo
-                  const HealthcareLogoWidget(),
-                  SizedBox(height: 6.h),
-
-                  // Security Indicator
-                  Center(
-                    child: SecurityIndicatorWidget(
-                      isSecure: !_isAccountLocked && _failedAttempts == 0,
-                      failedAttempts: _failedAttempts,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppTheme.lightTheme.primaryColor.withValues(alpha: 0.12),
+              AppTheme.lightTheme.scaffoldBackgroundColor,
+              AppTheme.lightTheme.scaffoldBackgroundColor,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).padding.top -
+                      MediaQuery.of(context).padding.bottom,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 4.h),
+                    const HealthcareLogoWidget(),
+                    SizedBox(height: 3.h),
+                    Center(
+                      child: SecurityIndicatorWidget(
+                        isSecure: !_isAccountLocked && _failedAttempts == 0,
+                        failedAttempts: _failedAttempts,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-
-                  // Login Form
-                  LoginFormWidget(
-                    onLogin: _handleLogin,
-                    isLoading: _isLoading,
-                  ),
-                  SizedBox(height: 4.h),
-
-                  // Biometric Authentication
-                  BiometricAuthWidget(
-                    onBiometricSuccess: _handleBiometricSuccess,
-                    isVisible:
-                        _showBiometric && !_isLoading && !_isAccountLocked,
-                  ),
-                  SizedBox(height: 6.h),
-
-                  // Footer Information
-                  _buildFooter(),
-                  SizedBox(height: 4.h),
-                ],
+                    SizedBox(height: 2.h),
+                    Container(
+                      padding: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
+                        color: AppTheme.lightTheme.colorScheme.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppTheme.lightTheme.colorScheme.outline
+                              .withValues(alpha: 0.25),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.lightTheme.colorScheme.shadow
+                                .withValues(alpha: 0.08),
+                            blurRadius: 22,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          LoginFormWidget(
+                            onLogin: _handleLogin,
+                            isLoading: _isLoading,
+                          ),
+                          SizedBox(height: 2.h),
+                          BiometricAuthWidget(
+                            onBiometricSuccess: _handleBiometricSuccess,
+                            isVisible: _showBiometric &&
+                                !_isLoading &&
+                                !_isAccountLocked,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 3.h),
+                    _buildFooter(),
+                    SizedBox(height: 2.h),
+                  ],
+                ),
               ),
             ),
           ),

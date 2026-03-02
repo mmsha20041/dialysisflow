@@ -23,7 +23,14 @@ class DashboardHeaderWidget extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       decoration: BoxDecoration(
-        color: AppTheme.lightTheme.colorScheme.surface,
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.lightTheme.primaryColor.withValues(alpha: 0.1),
+            AppTheme.lightTheme.colorScheme.surface,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(16),
           bottomRight: Radius.circular(16),
@@ -47,8 +54,23 @@ class DashboardHeaderWidget extends StatelessWidget {
                   width: 12.w,
                   height: 12.w,
                   decoration: BoxDecoration(
-                    color: AppTheme.lightTheme.primaryColor,
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.lightTheme.primaryColor,
+                        AppTheme.lightTheme.primaryColor.withValues(alpha: 0.75),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.lightTheme.primaryColor
+                            .withValues(alpha: 0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
                   ),
                   child: Center(
                     child: Text(
@@ -88,7 +110,7 @@ class DashboardHeaderWidget extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
                   decoration: BoxDecoration(
-                    color: _getShiftStatusColor().withValues(alpha: 0.1),
+                    color: _getShiftStatusColor().withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: _getShiftStatusColor(),
@@ -127,8 +149,12 @@ class DashboardHeaderWidget extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),
                   decoration: BoxDecoration(
-                    color:
-                        AppTheme.lightTheme.primaryColor.withValues(alpha: 0.1),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.lightTheme.primaryColor.withValues(alpha: 0.2),
+                        AppTheme.lightTheme.primaryColor.withValues(alpha: 0.08),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
