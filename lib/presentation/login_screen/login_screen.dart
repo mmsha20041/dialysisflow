@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../core/app_export.dart';
-import '../../core/services/auth_service.dart';
+import './state/login_controller.dart';
+import './state/login_state.dart';
 import './widgets/biometric_auth_widget.dart';
 import './widgets/healthcare_logo_widget.dart';
 import './widgets/login_form_widget.dart';
 import './widgets/security_indicator_widget.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
+class _LoginScreenState extends ConsumerState<LoginScreen>
     with TickerProviderStateMixin {
-  bool _isLoading = false;
-  bool _showBiometric = false;
-  int _failedAttempts = 0;
-  bool _isAccountLocked = false;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -33,24 +30,11 @@ class _LoginScreenState extends State<LoginScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
     _fadeController.forward();
-
-    // Show biometric option for returning users after a delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _showBiometric = true;
-        });
-      }
-    });
   }
 
   @override
@@ -59,94 +43,26 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  Future<void> _handleLogin(
-      String username, String password, String selectedRole) async {
-    if (_isAccountLocked) {
-      _showErrorMessage(
-          'Account is temporarily locked. Please try again later.');
-      return;
-    }
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<LoginState>(loginControllerProvider, (previous, next) {
+      if (next is LoginError) {
+        HapticFeedback.heavyImpact();
+        _showMessage(next.message, isError: true);
+      }
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final response = await _authService.signIn(
-        email: username.contains('@') ? username : '$username@dialysisflow.com',
-        password: password,
-      );
-
-      if (response.user != null) {
+      if (next is LoginSuccess && next.message != null) {
         HapticFeedback.lightImpact();
-
-        setState(() {
-          _failedAttempts = 0;
-        });
-
-        if (mounted) {
+        if (next.message == 'Login successful' ||
+            next.message == 'Biometric authentication successful') {
           Navigator.pushReplacementNamed(context, '/role-based-dashboard');
         }
       }
-    } catch (e) {
-      HapticFeedback.heavyImpact();
-      setState(() {
-        _failedAttempts++;
-        if (_failedAttempts >= 3) {
-          _isAccountLocked = true;
-          Future.delayed(const Duration(seconds: 30), () {
-            if (mounted) {
-              setState(() {
-                _isAccountLocked = false;
-                _failedAttempts = 0;
-              });
-            }
-          });
-        }
-      });
+    });
 
-      if (_failedAttempts >= 3) {
-        _showErrorMessage(
-            'Account locked due to multiple failed attempts. Please try again in 30 seconds.');
-      } else {
-        _showErrorMessage(
-            'Invalid credentials. Please check your email and password.');
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+    final state = ref.watch(loginControllerProvider);
+    final isLoading = state is LoginLoading;
 
-  void _handleBiometricSuccess() {
-    HapticFeedback.lightImpact();
-    Navigator.pushReplacementNamed(context, '/role-based-dashboard');
-  }
-
-  void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
-            color: AppTheme.lightTheme.colorScheme.onError,
-          ),
-        ),
-        backgroundColor: AppTheme.lightTheme.colorScheme.error,
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.all(4.w),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2.w),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -165,36 +81,37 @@ class _LoginScreenState extends State<LoginScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: 8.h),
-
-                  // Healthcare Logo
                   const HealthcareLogoWidget(),
                   SizedBox(height: 6.h),
-
-                  // Security Indicator
                   Center(
                     child: SecurityIndicatorWidget(
-                      isSecure: !_isAccountLocked && _failedAttempts == 0,
-                      failedAttempts: _failedAttempts,
+                      isSecure: !state.data.isAccountLocked &&
+                          state.data.failedAttempts == 0,
+                      failedAttempts: state.data.failedAttempts,
                     ),
                   ),
                   SizedBox(height: 4.h),
-
-                  // Login Form
                   LoginFormWidget(
-                    onLogin: _handleLogin,
-                    isLoading: _isLoading,
+                    onLogin: (username, password, selectedRole) {
+                      ref.read(loginControllerProvider.notifier).login(
+                            username: username,
+                            password: password,
+                          );
+                    },
+                    isLoading: isLoading,
                   ),
                   SizedBox(height: 4.h),
-
-                  // Biometric Authentication
                   BiometricAuthWidget(
-                    onBiometricSuccess: _handleBiometricSuccess,
-                    isVisible:
-                        _showBiometric && !_isLoading && !_isAccountLocked,
+                    onBiometricSuccess: () {
+                      ref
+                          .read(loginControllerProvider.notifier)
+                          .completeBiometricLogin();
+                    },
+                    isVisible: state.data.showBiometric &&
+                        !isLoading &&
+                        !state.data.isAccountLocked,
                   ),
                   SizedBox(height: 6.h),
-
-                  // Footer Information
                   _buildFooter(),
                   SizedBox(height: 4.h),
                 ],
@@ -206,10 +123,29 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  void _showMessage(String message, {required bool isError}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+            color: isError
+                ? AppTheme.lightTheme.colorScheme.onError
+                : AppTheme.lightTheme.colorScheme.onPrimary,
+          ),
+        ),
+        backgroundColor: isError
+            ? AppTheme.lightTheme.colorScheme.error
+            : AppTheme.lightTheme.colorScheme.primary,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(4.w),
+      ),
+    );
+  }
+
   Widget _buildFooter() {
     return Column(
       children: [
-        // Version Info
         Text(
           'Version 1.0.0',
           style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(
@@ -217,8 +153,6 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
         SizedBox(height: 1.h),
-
-        // Compliance Info
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -238,7 +172,6 @@ class _LoginScreenState extends State<LoginScreen>
           ],
         ),
         SizedBox(height: 2.h),
-
         Text(
           'Secure Healthcare Access',
           style: AppTheme.lightTheme.textTheme.bodySmall?.copyWith(

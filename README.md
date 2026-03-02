@@ -110,3 +110,27 @@ flutter build ios --release
 - Styled with Material Design
 
 Built with ❤️ on Rocket.new
+
+## 🧠 State Management Convention (Riverpod)
+
+This project now standardizes on **Riverpod + StateNotifier** for feature state.
+
+### Required feature pattern
+For each major flow (`auth`, `dashboard`, `patient list`, `patient detail`, `registration`):
+
+1. Create a feature-level controller in `presentation/<feature>/state/*_controller.dart`.
+2. Create a feature-level state model in `presentation/<feature>/state/*_state.dart`.
+3. Expose explicit state classes:
+   - `*Loading`
+   - `*Success`
+   - `*Error`
+   - `*Empty`
+4. Keep business logic (fetching, filtering, retries, side-effect decisions) in the controller.
+5. Keep widget tree focused on rendering and navigation only.
+
+### Implemented reference features
+- `login_screen` → `LoginController` + `LoginState`
+- `role_based_dashboard` → `DashboardController` + `DashboardState`
+- `patient_list` → `PatientListController` + `PatientListState`
+
+Use these as the baseline for upcoming `patient_detail` and `patient_registration` migrations.
